@@ -94,7 +94,7 @@ includes icons and links:
 
     ---
 
-    Install [`mkdocs-material`](#) with [`pip`](#) and get up
+    Install [`mkdocs-materialx`](#) with [`pip`](#) and get up
     and running in minutes
 
     [:octicons-arrow-right-24: Getting started](#)
@@ -133,7 +133,7 @@ includes icons and links:
 
     ---
 
-    Install [`mkdocs-material`][mkdocs-material] with [`pip`][pip] and get up
+    Install [`mkdocs-materialx`][mkdocs-materialx] with [`pip`][pip] and get up
     and running in minutes
 
     [:octicons-arrow-right-24: Getting started][getting started]

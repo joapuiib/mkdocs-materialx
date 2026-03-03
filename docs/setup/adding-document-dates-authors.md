@@ -8,7 +8,7 @@ icon: material/account-clock-outline
 <!-- md:version 10.0.4 -->
 <!-- md:plugin [document-dates] -->
 
-You can add date and author information to your documents via the plugin [document-dates], a new generation MkDocs plugin for displaying exact **creation date, last updated date, authors, email** of documents
+You can add date and author information to your documents via the plugin [document-dates], a new generation MkDocs plugin for displaying exact **creation date, last updated date, authors, email** of documents.
 
 ![render](../assets/screenshots/document-dates.gif)
 
@@ -16,7 +16,7 @@ You can add date and author information to your documents via the plugin [docume
 
 ## Features
 
-- Always displays **exact** meta information of the document and works in any environment (no-Git, Git environments, Docker, all CI/CD build systems, etc.)
+- Works in any environment (no-Git, Git environments, Docker, all CI/CD build systems, etc.)
 - Support list display of recently updated documents (in descending order of update date)
 - Support for manually specifying date and author in `Front Matter`
 - Support for multiple date formats (date, datetime, timeago)
@@ -145,46 +145,61 @@ The following configuration options are supported:
 
   [document-dates]: https://github.com/jaywhj/mkdocs-document-dates
 
-## Specify datetime
+## Settings
 
-### Priority
+The plugin provides a wide range of customization options to meet various personalized needs.
 
-The plugin will **automatically** loads the exact date of the document in the following order
+### Date & Time
+
+The date data is retrieved using a combination of different methods to adapt to various runtime environments, including no-Git environments, Git, Docker containers, and all CI/CD build systems:
+
+- Uses **filesystem timestamps** to ensure accurate original dates in local no-Git environments
+- Uses **Git timestamps** to ensure relatively accurate dates in Git environments
+- Uses **cache files** to ensure accurate original dates in Git environments
+- Front Matter: Manually specify the date in Front Matter if you prefer not to use automatic dates
+
+??? quote "Why not use filesystem timestamps in Git environments?"
+
+    Because files are recreated during git checkout or git clone, causing the original timestamps of branches/files to be lost after cloning or checking out.
+
+#### Loading order
+
+By default, the plugin will **automatically load** the document's "creation date" and "last updated date" in the following order.
 
 ```mermaid
 %%{init: {'theme': 'default', 'themeVariables': {'fontSize': '12px'}}}%%
 flowchart LR
-    A(1.Front matter)
-    B(2.Cache file)
-    C(3.Git timestamp)
-    D(4.File timestamp)
+    A(1.Front Matter)
+    B(2.Cache File)
+    C(3.Git Timestamp)
+    D(4.File Timestamp)
     A -.Creation date.-> B -.-> C -.-> D
     A -.Last updated.-> C
 ```
 
 <!--
-- [x] Creation date: `Front matter` > `Cache file` > `Git timestamp` > `File timestamp`
-- [x] Last updated: `Front matter` > `Git timestamp` > `File timestamp`
+- [x] Creation date: `Front Matter` > `Cache File` > `Git Timestamp` > `File Timestamp`
+- [x] Last updated: `Front Matter` > `Git Timestamp` > `File Timestamp`
 -->
 
 !!! quote ""
 
     === "Creation date"
-    
-        1. Prioritize reading the custom creation date in front matter
+
+        1. Prioritize reading the custom creation date in Front Matter
         2. Then read the creation date in the cache file
         3. Next read the document’s first git commit date as the creation date
         4. Finally read the file’s creation time
     
     === "Last updated"
-    
-        1. Prioritize reading the custom last updated date in front matter
+
+        1. Prioritize reading the custom last updated date in Front Matter
         2. Then read the document’s last git commit date as the last updated date
         3. Finally read the file’s modification time
 
-### Customization
+#### Customization
 
-This can be specified manually in front matter using the following fields
+This can be specified in Front Matter using the following fields:
 
 - Creation date: `created`, `date`
 - Last updated: `updated`, `modified`
@@ -196,27 +211,28 @@ updated: 2025-02-23
 ---
 ```
 
-### Automatic cache creation date
+#### Cache creation date
 
-The plugin automatically caches the creation date (no need to cache the last updated date), here's how it works:
+In the Git environment, the plugin reads the document's "first git commit date" as the creation date by default. However, if you need to retrieve the original creation date of the document (earlier than the first git commit), you can manually install Git hooks to use a caching mechanism to solve this issue. Navigate to the target repository directory in the terminal and execute the following command to install Git hooks:
 
-1) In order to always get the original creation date of the document (earlier than the first git commit), a cache file is used to store the original creation date, located in the docs folder (hidden by default), please don't remove it:
+```
+mdd-hooks
+```
+
+> This command installs the pre-commit hook locally in the root directory of the target repository, located at `.githooks/pre-commit`.
+
+Afterwards, every time you execute `git commit`, the cache file containing the creation date will be automatically generated (hidden by default) in the docs directory, and this cache file will also be committed automatically.
 
 - `docs/.dates_cache.jsonl`, cache file
 - `docs/.gitattributes`, merge mechanism for cache file
 
-2) The Git Hooks mechanism is used to automatically trigger the storing of the cache (on each `git commit`), and the cached file is automatically committed along with it, in addition, the installation of Git Hooks is automatically triggered when the plugin is installed, without any manual intervention
+This method is compatible with CI/CD build systems, which will automatically detect and load the cache file.
 
-- Make sure you run `git commit` from a terminal, not from integration tools like VSCode, which has bugs when integrating Git hooks
-- If you find that the hook auto-installation fails, you can also use this command to install it manually: `mkdocs-document-dates-hooks`
+#### Configure git fetch depth
 
-Fallback: If the cached file doesn't exist or automatic caching fails, the creation date will not be affected, it will proceed to priority 3 (read the first git commit date as the creation date)
+In the CI/CD system, if the "creation date" uses the "first git commit date" (i.e., no custom or cache file date), you need to configure `git fetch depth` in the CI system to retrieve the correct first git commit record. For example:
 
-### Configure git fetch depth
-
-If the "creation date" is the date of the first git commit (i.e., when no custom creation date and cache file creation date are available), and you are deploying through a CI system, you might need to configure the git fetch depth in the CI system to retrieve the accurate record of the first git commit, for example:
-
-```yaml hl_lines="6 7"
+```yaml hl_lines="6 7" title=".github/workflows/ci.yaml"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -228,52 +244,43 @@ jobs:
 
 !!! quote ""
 
-    - Github Actions: set `fetch-depth` to `0` ([docs](https://github.com/actions/checkout))
-    - Gitlab Runners: set `GIT_DEPTH` to `0` ([docs](https://docs.gitlab.com/ee/ci/pipelines/settings.html#limit-the-number-of-changes-fetched-during-clone))
-    - Bitbucket pipelines: set `clone: depth: full` ([docs](https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/))
-    - Azure Devops pipelines: set `Agent.Source.Git.ShallowFetchDepth` to something very high like `10e99` ([docs](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/pipeline-options-for-git?view=azure-devops#shallow-fetch))
+    - **Github** Actions: set `fetch-depth` to `0` ([docs](https://github.com/actions/checkout))
+    - **Gitlab** Runners: set `GIT_DEPTH` to `0` ([docs](https://docs.gitlab.com/ee/ci/pipelines/settings.html#limit-the-number-of-changes-fetched-during-clone))
+    - **Bitbucket** pipelines: set `clone: depth: full` ([docs](https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/))
+    - **Azure** Devops pipelines: set `Agent.Source.Git.ShallowFetchDepth` to something very high like `10e99` ([docs](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/pipeline-options-for-git?view=azure-devops#shallow-fetch))
 
-### Adaptive to any environment
+### Author
 
-The plugin can get the original exact date of the document in any environment, supports no-Git environments, Git environments, Docker, all CI/CD build systems, etc., here's how it works:
+#### Loading order
 
-1. Adopt File Timestamp: ensure that the original exact date can be obtained in a local no-Git environment
-2. Adopt Git Timestamp: ensure that the relatively accurate date can be obtained in a Git environment
-3. Adopt Cache File: ensure that the original absolutely exact date can be obtained in a Git environment
-4. Front Matter: if you don't want to use automated dates, you can perform personalized customization in front matter
-
-## Specify author
-
-### Priority
-
-The plugin will **automatically** loads the author information of the document in the following order, and will automatically parse the email and then do the linking
+The plugin will **automatically** loads the author information of the document in the following order, and will automatically parse the email and then do the linking.
 
 ```mermaid
 %%{init: {'theme': 'default', 'themeVariables': {'fontSize': '12px'}}}%%
 flowchart LR
-    A(1.Front matter)
-    B(2.Git author)
+    A(1.Front Matter)
+    B(2.Git Author)
     C(3.site_author)
-    D(4.PC username)
+    D(4.PC Username)
     A -.-> B -.-> C -.-> D
 ```
 
 <!--
-- [x] `Front matter` > `Git author` > `site_author(mkdocs.yml)` > `PC username`
+- [x] `Front Matter` > `Git Author` > `site_author(mkdocs.yml)` > `PC Username`
 -->
 
 !!! quote ""
 
     === "Description"
     
-        1. Prioritize reading custom authors in front matter
-        2. Then read the git author
+        1. Prioritize reading custom authors in Front Matter
+        2. Then read the Git author
         3. Next read the site_author in mkdocs.yml
         4. Finally read the PC username
 
-### Customization
+#### Customization
 
-Can be configured in front matter in the following ways:
+Can be configured in Front Matter in the following ways:
 
 1) Configure a simple author: via field `name`
 
@@ -295,7 +302,7 @@ authors:
 ---
 ```
 
-### Enhanced author configuration
+#### Enhanced author configuration
 
 For a better user experience, you can add full configuration for all authors. To do so, create an `authors.yml` file in the `docs/` folder using the format below:
 
@@ -315,63 +322,66 @@ authors:
     description: xxx
 ```
 
-When the author name in `Front matter`, `Git author`, `site_author(mkdocs.yml)` matches the key in `authors`, the full author information of the key will be automatically loaded
+When the author name in `Front Matter`, `Git Author`, `site_author(mkdocs.yml)` matches the key in `authors`, the full author information of the key will be automatically loaded.
 
-### Git author aggregation
+#### Git author aggregation
 
-Git author support account aggregation, i.e. multiple different email accounts for the same person can be aggregated to show the same author, which can be configured by providing a `.mailmap` file in the repository root directory, this is also a feature of Git itself, see [gitmailmap](https://git-scm.com/docs/gitmailmap) for more details
+Git author support account aggregation, i.e. multiple different email accounts for the same person can be aggregated to show the same author, which can be configured by providing a `.mailmap` file in the repository root directory, this is also a feature of Git itself, see [gitmailmap](https://git-scm.com/docs/gitmailmap) for more details.
 
-The following example aggregates a gmail account into a qq account and displays it uniformly as Aaron:
+The following example unifies my other Git accounts and displays them as `Aaron <junewhj@qq.com>`:
 
 ```yaml title=".mailmap"
 Aaron <junewhj@qq.com> <aaron@gmail.com>
+Aaron <junewhj@qq.com> <aaron@AarondeMacBook-Pro.local>
+Aaron <junewhj@qq.com> aaron <aaronwqt@icloud.com>
 ```
 
-## Specify avatar
+### Avatar
 
-**Priority**: The plugin will **automatically** loads the author avatar in the following order
+#### Loading order
+
+The plugin will **automatically** loads the author avatar in the following order.
 
 ```mermaid
 %%{init: {'theme': 'default', 'themeVariables': {'fontSize': '12px'}}}%%
 flowchart LR
-    A(1.Front matter)
-    B(2.Gravatar avatar)
-    C(3.Character avatar)
+    A(1.Front Matter)
+    B(2.Online Avatar)
+    C(3.Character Avatar)
     A -.-> B -.-> C
 ```
 
 <!--
-- [x] `Front matter` > `Gravatar avatar` > `Character avatar`
+- [x] `Front Matter` > `Online Avatar` > `Character Avatar`
 -->
 
-**Customization**: 
+#### Customization 
 
-Customizable via `avatar` field in [Enhanced author configuration](#enhanced-author-configuration) (supports URL paths and local file paths)
+Customizable via `avatar` field in [Enhanced author configuration](#enhanced-author-configuration) (supports URL paths and local file paths).
 
-**Others**：
+#### Other avatars
 
 !!! quote ""
 
-    === "Gravatar avatar"
-    
-        Load from Gravatar or Weavatar based on Git's `user.email`
-    
-    === "Character avatar"
-    
-        Automatically generated based on the author's name with the following rules:
+    === "Online avatar"
 
+        Load from Gravatar or Weavatar based on Git's `user.email`
+
+    === "Character avatar"
+
+        Automatically generated based on the author's name with the following rules:
         1. Extract initials: English takes the combination of initials, other languages take the first character
         2. Generate dynamic background color: Generate HSL color based on the hash of the name
 
-## Structure and style
+### Structure and Style
 
-You can configure the display structure of the plugin in the following ways in either mkdocs.yml or front matter
+You can configure the display structure of the plugin in the following ways in either mkdocs.yml or Front Matter.
 
-### Configuration structure
+#### Configuration structure
 
-**Global toggle**, configured in mkdocs.yml:
+**Global Toggle**, configured in mkdocs.yml:
 
-```yaml
+```yaml title="mkdocs.yml"
 plugins:
   - document-dates:
       ...
@@ -380,7 +390,7 @@ plugins:
       show_author: true     # Show author: true(avatar) text(text) false(hidden), default: true 
 ```
 
-**Local toggle**, configured in front matter (using the same field names):
+**Local Toggle**, configured in Front Matter (using the same field names):
 
 ```yaml
 ---
@@ -394,7 +404,7 @@ show_author: text
 
     When used in combination, the global toggle acts as the master switch, and the local toggle only takes effect when the master switch is enabled. This does not follow the logic of local configurations overriding global ones.
 
-### Configuration style
+#### Configuration style
 
 You can quickly set the plugin styles through preset entrances, such as **icons, themes, colors, fonts, animations, dividing line** and so on, you just need to find the file below and uncomment it:
 
@@ -405,43 +415,79 @@ You can quickly set the plugin styles through preset entrances, such as **icons,
 
 You can also refer to the latest example file for free customization: [user.config](https://github.com/jaywhj/mkdocs-document-dates/tree/main/mkdocs_document_dates/static/config)
 
-## Use template variables
+### Use Template Variables
 
 You can use the following variables in the template to access the document's meta-info:
 
-- page.meta.document_dates_created
-- page.meta.document_dates_updated
-- page.meta.document_dates_authors
+- page.meta._mx.document_dates.dates.created
+- page.meta._mx.document_dates.dates.updated
+- page.meta._mx.document_dates.authors
 - config.extra.recently_updated_docs
 
-### Set correct `lastmod` for sitemap
+#### Set correct `lastmod` for sitemap
 
-You can set the correct `lastmod` for your site's `sitemap.xml` with the template variable `document_dates_updated` so that search engines can better handle SEO and thus increase your site's exposure
+You can set the correct `lastmod` for your site's `sitemap.xml` with the template variable `_mx.document_dates.dates.updated` so that search engines can better handle SEO and thus increase your site's exposure
 
 Step: Download the sample template [sitemap.xml](https://github.com/jaywhj/mkdocs-document-dates/blob/main/templates/overrides/sitemap.xml), and override this path `docs/overrides/sitemap.xml`
 
-### Recustomize plugin
+#### Recustomize plugin
 
 The plugin can be re-customized using templates, you have full control over the rendering logic and the plugin is only responsible for providing the data
 
 Step: Download the sample template [source-file.html](https://github.com/jaywhj/mkdocs-document-dates/blob/main/templates/overrides/partials/source-file.html), and override this path `docs/overrides/partials/source-file.html`, then freely customize the template code
 
-## Add recent updates module
+### Recently Updated Module
 
-The recent updates module is perfect for sites **with a large number of documents**, so that **readers can quickly see what's new**.
+The recent updates module displays site documentation information in a structured way, which is ideal for sites with **a large number of documents or frequent updates**, allowing readers to **quickly see what's new**.
 
 ![recently-updated](../assets/screenshots/recently-updated-en.gif)
 
-You can get the recently updated document data (in descending order of update date) in any template via the variable `config.extra.recently_updated_docs`, then customize the rendering logic yourself
+You can get the recently updated document data (in descending order of update date) in any template via the variable `config.extra.recently_updated_docs`, then customize the rendering logic yourself.
 
-Or refer to the documentation [Recent updates module](adding-recent-updates-module.md) to use the preset template:
+Or just use the preset template:
 
 - Display recently updated documents in descending order by update time, list items are dynamically updated
 - Support multiple view modes including list, detail and grid
-- Support automatic extraction of article summaries
+- Support automatic extraction of article summaries, no manual configuration required
 - Support for customizing article cover in Front Matter
 
-## Add localized languages
+#### Config switch
+
+First, configure the switch of `recently-updated` in `mkdocs.yml`:
+
+```yaml title="mkdocs.yml"
+- document-dates:
+    ...
+    recently-updated:
+      limit: 10        # Limit the number of docs displayed
+      exclude:         # Exclude documents you don't want to show (support unix shell-style wildcards)
+        - index.md
+        - blog/*
+```
+
+#### Add to sidebar navigation
+
+Download the sample template [nav.html](https://github.com/jaywhj/mkdocs-document-dates/blob/main/templates/overrides/partials/nav.html), and override this path `docs/overrides/partials/nav.html`
+
+#### Add anywhere in document
+
+Insert this line anywhere in your document:
+
+```yaml
+<!-- RECENTLY_UPDATED_DOCS -->
+```
+
+#### Configure article cover
+
+You can specify an article cover in Front Matter using the field `cover` (supports URL paths and local file paths):
+
+```yaml
+---
+cover: assets/cat.jpg
+---
+```
+
+### Add Localization Language
 
 The plugin's `tooltip` and `timeago` have built-in multi-language support, and the `locale` is automatically detected, so you don't need to configure it manually. If any language is missing, you can add it for them:
 
@@ -460,19 +506,7 @@ When `type: timeago` is set, the timeago.js library is enabled for dynamic time 
 
 - In `user.config.js`, refer to [Part 2](https://github.com/jaywhj/mkdocs-document-dates/blob/main/mkdocs_document_dates/static/config/user.config.js) to add it by registering yourself
 - In `mkdocs.yml`, configure the full version of `timeago.full.min.js` to reload [all locales](https://github.com/hustcc/timeago.js/tree/master/src/lang)
-  ```yaml
+  ```yaml title="mkdocs.yml"
   extra_javascript:
     - assets/document_dates/core/timeago.full.min.js
   ```
-
-## Other tips
-
-When running in Docker, you need to set the HOME environment variable first, because installing Git Hooks requires a writable user configuration directory. For example, add the following configuration to your `docker-compose.yml`:
-
-```yaml
-environment:
-  - HOME=/docs
-working_dir: /docs
-volumes:
-  - ./mkdocs:/docs    # Mount the host's ./mkdocs to /docs in the container
-```

@@ -8,7 +8,7 @@ icon: simple/lastpass
 <!-- md:version 10.0.4 -->
 <!-- md:plugin [document-dates] -->
 
-You can add a list of recently updated documents anywhere in your document with a single line of code. This is ideal for sites **with a large number of documents**, so that **readers can quickly see what's new**.
+The recent updates module displays site documentation information in a structured way, which is ideal for sites with **a large number of documents or frequent updates**, allowing readers to **quickly see what's new**.
 
 ![recently-updated](../assets/screenshots/recently-updated-en.gif)
 
@@ -31,7 +31,7 @@ pip install mkdocs-document-dates
 
 then configure the switch `recently-updated` in `mkdocs.yml`:
 
-```yaml
+```yaml title="mkdocs.yml"
 - document-dates:
     ...
     recently-updated:
@@ -73,7 +73,7 @@ Insert this line anywhere in your document:
 
 ## Configure article cover
 
-Use the field `cover` in Front Matter to specify the article cover, which supports URL paths and local file paths, for example:
+Use the field `cover` in Front Matter to specify the article cover (supports URL paths and local file paths):
 
 ```yaml
 ---
