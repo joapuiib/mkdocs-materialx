@@ -629,3 +629,10 @@
     }
   }
 }
+
+// Allow the "Back to Home" title in the left sidebar of the blog to be displayed on the desktop
+@include break-from-device(screen) {
+  .md-sidebar--post .md-post__back .md-nav__title {
+    display: block;
+  }
+}
