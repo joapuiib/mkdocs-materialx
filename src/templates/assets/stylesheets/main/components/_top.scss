@@ -172,17 +172,17 @@
 @include break-from-device(screen) {
   @supports selector(.md-container:has(.md-sidebar)) {
     .md-container {
-      // 当左侧 nav 可见，右侧 toc 不可见时
-      &:has(.md-sidebar.md-sidebar--primary:not([hidden])) {
+      // 当左侧可见（有 primary nav 或 blog post sidebar），右侧 toc 不可见时
+      &:has(.md-sidebar:is(.md-sidebar--primary, .md-sidebar--post):not([hidden])) {
         &:not(:has(.md-sidebar.md-sidebar--secondary:not([hidden]))) {
           .md-top {
             margin-inline-start: calc(50% + var(--md-sidebar-primary-width) / 2);
           }
         }
       }
-      // 当右侧 toc 可见，左侧 nav 不可见时
+      // 当左侧不可见，右侧 toc 可见时
       &:has(.md-sidebar.md-sidebar--secondary:not([hidden])) {
-        &:not(:has(.md-sidebar.md-sidebar--primary:not([hidden]))) {
+        &:not(:has(.md-sidebar:is(.md-sidebar--primary, .md-sidebar--post):not([hidden]))) {
           .md-top {
             margin-inline-start: calc(50% - var(--md-sidebar-primary-width) / 2);
           }
@@ -191,7 +191,7 @@
     }
 
     [dir="rtl"] .md-container {
-      &:has(.md-sidebar.md-sidebar--primary:not([hidden])) {
+      &:has(.md-sidebar:is(.md-sidebar--primary, .md-sidebar--post):not([hidden])) {
         &:not(:has(.md-sidebar.md-sidebar--secondary:not([hidden]))) {
           .md-top {
             margin-inline-start: calc(50% - var(--md-sidebar-primary-width) / 2);
@@ -199,7 +199,7 @@
         }
       }
       &:has(.md-sidebar.md-sidebar--secondary:not([hidden])) {
-        &:not(:has(.md-sidebar.md-sidebar--primary:not([hidden]))) {
+        &:not(:has(.md-sidebar:is(.md-sidebar--primary, .md-sidebar--post):not([hidden]))) {
           .md-top {
             margin-inline-start: calc(50% + var(--md-sidebar-primary-width) / 2);
           }
