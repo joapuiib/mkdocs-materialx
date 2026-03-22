@@ -419,14 +419,14 @@ You can also refer to the latest example file for free customization: [user.conf
 
 You can use the following variables in the template to access the document's meta-info:
 
-- page.meta._mx.document_dates.dates.created
-- page.meta._mx.document_dates.dates.updated
-- page.meta._mx.document_dates.authors
+- page.meta.document_dates.dates.created
+- page.meta.document_dates.dates.updated
+- page.meta.document_dates.authors
 - config.extra.recently_updated_docs
 
 #### Set correct `lastmod` for sitemap
 
-You can set the correct `lastmod` for your site's `sitemap.xml` with the template variable `_mx.document_dates.dates.updated` so that search engines can better handle SEO and thus increase your site's exposure
+You can set the correct `lastmod` for your site's `sitemap.xml` with the template variable `document_dates.dates.updated` so that search engines can better handle SEO and thus increase your site's exposure
 
 Step: Download the sample template [sitemap.xml](https://github.com/jaywhj/mkdocs-document-dates/blob/main/templates/overrides/sitemap.xml), and override this path `docs/overrides/sitemap.xml`
 
