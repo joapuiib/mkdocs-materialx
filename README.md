@@ -32,7 +32,7 @@
 | Aspect              |          mkdocs-material           |                       MaterialX                   |
 | ------------------- |  --------------------------------  |  -----------------------------------------------  |
 | **Latest Version**  |       mkdocs-material-9.7.1        | mkdocs-materialx-10.x <br />(based on mkdocs-material-9.7.1) |
-| **Usage**           | mkdocs.yml + theme name `material` | properdocs.yml + new theme name `materialx` <br />everything else is the same as with material |
+| **Usage**           | mkdocs.yml + theme name `material` | mkdocs.yml + new theme name `materialx` <br />everything else is the same as with material |
 | **Current Status**  |     Stopped maintenance     |          Active maintenance and updates           |
 | **Feature Updates** |      None (with legacy bugs)       | Bug fixes, new features, UX improvements<br />see [Changelog](https://github.com/jaywhj/mkdocs-materialx/releases) |
 
@@ -79,7 +79,7 @@
 pip install mkdocs-materialx
 ```
 
-2 - Configure `materialx` theme to properdocs.yml (mkdocs.yml):
+2 - Configure `materialx` theme to mkdocs.yml:
 
 ``` yaml
 theme:
@@ -91,17 +91,18 @@ theme:
 
 3 - Start a live preview server with the following command for automatic open and reload:
 
+**for MkDocs** :
+
+```
+mkdocs serve --livereload -o
+```
+
 **for ProperDocs** :
 
 ```
 properdocs serve -o
 ```
 
-**for MkDocs** :
-
-```
-mkdocs serve --livereload -o
-```
 <br />
 
 For detailed installation instructions, configuration options, and a demo, visit [jaywhj.github.io/mkdocs-materialx](https://jaywhj.github.io/mkdocs-materialx/)

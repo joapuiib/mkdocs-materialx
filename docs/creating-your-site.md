@@ -57,7 +57,7 @@ plugins require the `site_url` to be set, so you should always do this.
             ``` json
             {
               "yaml.schemas": {
-                "https://jaywhj.github.io/mkdocs-materialx/schema.json": "properdocs.yml"
+                "https://jaywhj.github.io/mkdocs-materialx/schema.json": "mkdocs.yml"
               },
               "yaml.customTags": [ // (1)!
                 "!ENV scalar",
@@ -152,7 +152,7 @@ technical writing experience.
 
 If you find it tedious to configure them one by one, you can use the configuration template that this site uses itself to lower the barrier to entry.
 
-Download the template [properdocs.yml](assets/properdocs.yml), replace the personalized parts in the template with your own, and leave all other options unchanged.
+Download the template [mkdocs.yml](assets/mkdocs.yml), replace the personalized parts in the template with your own, and leave all other options unchanged.
 
 ## Previewing as you write
 
@@ -177,7 +177,7 @@ Point your browser to [localhost:8000][live preview] and you should see:
 
 [![Creating your site]][Creating your site]
 
-  [--dirtyreload]: https://www.properdocs.org/about/release-notes/#support-for-dirty-builds-990
+  [--dirtyreload]: https://www.mkdocs.org/about/release-notes/#support-for-dirty-builds-990
   [live preview]: http://localhost:8000
   [Creating your site]: assets/screenshots/creating-your-site.png
 
