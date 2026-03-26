@@ -29,7 +29,7 @@ _This article showcases all features that were added in 2021 and gives an
 outlook on what's going to drop in 2022. Additionally, it provides some context
 on the history of the project._
 
-  [MkDocs]: https://www.mkdocs.org
+  [MkDocs]: https://www.properdocs.org
 
 ## A little history
 
