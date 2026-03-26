@@ -73,12 +73,7 @@ jobs:
           pip install .[recommended,imaging]
 
       - name: Build documentation
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GOOGLE_ANALYTICS_KEY: ${{ secrets.GOOGLE_ANALYTICS_KEY }}
-        run: |
-          properdocs build --clean
-          properdocs --version
+        run: properdocs build --strict
 
       - name: Adjust permissions
         run: |
