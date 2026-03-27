@@ -4,22 +4,40 @@ icon: material/folder-plus-outline
 
 # Creating your site
 
-After you've [installed] MaterialX for MkDocs, you can bootstrap your project
-documentation using the `mkdocs` executable. Go to the directory where you want
-your project to be located and enter:
+After you've [installed] MaterialX, navigate to the target directory 
+where you want your project to be located in the terminal and execute the following command:
 
-```
-mkdocs new .
-```
+=== "MkDocs"
+
+    ```
+    mkdocs new .
+    ```
+
+=== "ProperDocs"
+
+    ```
+    properdocs new .
+    ```
 
 This will create the following structure:
 
-``` { .sh .no-copy }
-.
-├─ docs/
-│  └─ index.md
-└─ mkdocs.yml
-```
+=== "MkDocs"
+
+    ``` { .sh .no-copy }
+    .
+    ├─ docs/
+    │  └─ index.md
+    └─ mkdocs.yml
+    ```
+
+=== "ProperDocs"
+
+    ``` { .sh .no-copy }
+    .
+    ├─ docs/
+    │  └─ index.md
+    └─ properdocs.yml
+    ```
 
   [installed]: installation.md
 
@@ -27,7 +45,7 @@ This will create the following structure:
 
 ### Minimal configuration
 
-Simply set the `site_name` and add the following lines to `mkdocs.yml` to enable the theme:
+Simply set the `site_name` and add the following lines to `mkdocs.yml` / `properdocs.yml` to enable the theme:
 
 ``` yaml hl_lines="2-5"
 site_name: My site
@@ -44,7 +62,7 @@ plugins require the `site_url` to be set, so you should always do this.
 
 ??? tip "Recommended: configuration validation and auto-complete"
 
-    In order to minimize friction and maximize productivity, MaterialX for MkDocs
+    In order to minimize friction and maximize productivity, MaterialX
     provides its own [schema.json][^1] for `mkdocs.yml`. If your editor supports
     YAML schema validation, it's definitely recommended to set it up:
 
