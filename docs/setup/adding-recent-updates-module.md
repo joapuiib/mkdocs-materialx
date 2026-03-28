@@ -42,10 +42,7 @@ then configure the switch `recently-updated` in `mkdocs.yml`:
         - blog/*            # Example: exclude all files in blog folder, including subfolders
 ```
 
-You can also install the plugin [mkdocs-recently-updated-docs] to use alone
-
   [document-dates]: https://github.com/jaywhj/mkdocs-document-dates
-  [mkdocs-recently-updated-docs]: https://github.com/jaywhj/mkdocs-recently-updated-docs
 
 ## Configuration
 
