@@ -8,7 +8,7 @@ icon: material/account-clock-outline
 <!-- md:version 10.0.4 -->
 <!-- md:plugin [document-dates] -->
 
-You can add date and author information to your documents via the built-in [document-dates] plugin, a new generation MkDocs plugin for displaying exact **creation date, last updated date, authors, email** of documents.
+You can add date and author information to your documents via the plugin [document-dates], a new generation MkDocs plugin for displaying exact **creation date, last updated date, authors, email** of documents.
 
 ![render](../assets/screenshots/document-dates.gif)
 
