@@ -71,7 +71,6 @@ classifiers = [
 recommended = [
   "mkdocs-minify-plugin~=0.7",
   "mkdocs-redirects~=1.2",
-  "mkdocs-document-dates~=3.7",
   "mkdocs-glightbox~=0.5",
 ]
 git = [
