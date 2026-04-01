@@ -18,7 +18,7 @@ icon: material/layers-triple-outline
 ### 10.1.1 <small>March 29, 2026</small> { id="10.1.1" }
 
 - Added support for ProperDocs
-- Date & time infrastructure
+- Date & time infrastructure (provided by the built-in plugin `document-dates`; remember to enable it in the `plugins` section)
     - Completely resolved date and time infrastructure issues, enabling the project to support automated date processing. Manual date configuration is no longer required for any feature, including: page date display, blog post dates, blog date archives, blog list sorting, sitemap.xml (lastmod - SEO improvements), RSS feeds, recently updated section, search ranking, and more
     - Added an override template for `sitemap.xml` that supports dynamically loading the exact lastmod to improve SEO, see [sitemap.xml
 ](https://github.com/jaywhj/mkdocs-materialx/blob/master/src/templates/sitemap.xml){target="_blank"}
