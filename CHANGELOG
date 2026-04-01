@@ -1,4 +1,12 @@
 
+mkdocs-materialx-10.1.2 (2026-04-01)
+
+- Fixed the robustness of the `document-dates` plugin when running with the blog plugin
+- Fixed the border gap issue for `admonitions` & `details`
+- Updated the usage documentation for the `document-dates` plugin, see [Configuration](https://jaywhj.github.io/mkdocs-materialx/setup/adding-document-dates-authors#configuration){target="_blank"}
+- Updated project development setup
+- Archived unnecessary docs and exclude them from the build, see [Archives](https://github.com/jaywhj/mkdocs-materialx/tree/master/docs/archives){target="_blank"}
+
 mkdocs-materialx-10.1.1 (2026-03-29)
 
 - Added support for ProperDocs

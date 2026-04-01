@@ -6,6 +6,15 @@ icon: material/layers-triple-outline
 
 ## MaterialX
 
+
+### 10.1.2 <small>April 1, 2026</small> { id="10.1.2" }
+
+- Fixed the robustness of the `document-dates` plugin when running with the blog plugin
+- Fixed the border gap issue for `admonitions` & `details`
+- Updated the usage documentation for the `document-dates` plugin, see [Configuration](../setup/adding-document-dates-authors.md#configuration){target="_blank"}
+- Updated project development setup
+- Archived unnecessary docs and exclude them from the build, see [Archives](https://github.com/jaywhj/mkdocs-materialx/tree/master/docs/archives){target="_blank"}
+
 ### 10.1.1 <small>March 29, 2026</small> { id="10.1.1" }
 
 - Added support for ProperDocs
