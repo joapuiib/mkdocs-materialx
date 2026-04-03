@@ -125,7 +125,7 @@ icon: material/layers-triple-outline
 This release includes all features that were previously exclusive to the
 Insiders edition. These features are now freely available to everyone.
 
-__Note on deprecated plugins__: The [projects] and [typeset] plugins are
+__Note on deprecated plugins__: The `projects` and `typeset` plugins are
 included in this release, but must be considered deprecated. Both plugins
 proved unsustainable to maintain and represent architectural dead ends. They
 are provided as-is without ongoing support.
@@ -155,8 +155,6 @@ __Changes__:
 
   [Zensical]: https://zensical.org
   [Read the full announcement on our blog]: ../blog/posts/zensical.md
-  [projects]: ../plugins/projects.md
-  [typeset]: ../plugins/typeset.md
 
 ### 9.6.23 <small>November 1, 2025</small> { id="9.6.23" }
 
