@@ -99,6 +99,7 @@ export interface Config {
   translations: Translations           /* Translations */
   search: string                       /* Search worker URL */
   annotate?: Record<string, string[]>  /* Annotation mappings */
+  featureConfig?: Partial<Record<Flag, unknown>> /* Per-feature configuration */
   tags?: Record<string, string>        /* Tags mapping */
   version?: Versioning                 /* Versioning */
 }
@@ -136,6 +137,17 @@ export function configuration(): Config {
  */
 export function feature(flag: Flag): boolean {
   return config.features.includes(flag)
+}
+
+/**
+ * Retrieve the configuration for a feature flag
+ *
+ * @param flag - Feature flag
+ *
+ * @returns Feature configuration or undefined
+ */
+export function featureConfig<T>(flag: Flag): T | undefined {
+  return config.featureConfig?.[flag] as T | undefined
 }
 
 /**

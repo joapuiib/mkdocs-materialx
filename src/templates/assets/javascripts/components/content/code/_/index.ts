@@ -50,7 +50,7 @@ import {
   withLatestFrom
 } from "rxjs"
 
-import { feature } from "~/_"
+import { feature, featureConfig } from "~/_"
 import {
   getElement,
   getElementContentSize,
@@ -157,6 +157,37 @@ function findList(el: HTMLElement): HTMLElement | undefined {
 
   /* Everything else */
   return undefined
+}
+
+/**
+ * Check whether the language of a code block is in an exclusion list
+ *
+ * @param el - Code element
+ * @param exclude - List of languages to exclude
+ *
+ * @returns Test result
+ */
+function isLanguageExcluded(
+  el: HTMLElement, exclude: string[] | undefined
+): boolean {
+  if (!exclude?.length)
+    return false
+
+  /* Find closest element with a language class */
+  const host = el.closest("[class|=language]")
+  if (!host)
+    return false
+
+  /* Check each language class against the exclusion list */
+  for (const value of Array.from(host.classList)) {
+    if (!value.startsWith("language-"))
+      continue
+
+    const language = value.slice("language-".length)
+    if (exclude.includes(language))
+      return true
+  }
+  return false
 }
 
 /* ----------------------------------------------------------------------------
@@ -266,7 +297,9 @@ export function mountCodeBlock(
 
       /* Mount code selection */
       if (el.closest(".select") || (
-        feature("content.code.select") && !el.closest(".no-select")
+        feature("content.code.select") &&
+        !el.closest(".no-select") &&
+        !isLanguageExcluded(el, featureConfig<{ exclude?: string[] }>("content.code.select")?.exclude)
       )) {
         const base = +spans[0].id.split("-").pop()!
 
@@ -470,7 +503,9 @@ export function mountCodeBlock(
     /* Render button for Clipboard.js integration */
     if (ClipboardJS.isSupported()) {
       if (el.closest(".copy") || (
-        feature("content.code.copy") && !el.closest(".no-copy")
+        feature("content.code.copy") &&
+        !el.closest(".no-copy") &&
+        !isLanguageExcluded(el, featureConfig<{ exclude?: string[] }>("content.code.copy")?.exclude)
       )) {
 
         /* Mount tooltip, if enabled */

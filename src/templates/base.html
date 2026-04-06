@@ -197,6 +197,22 @@
   {% endif %}
     {% set features = config.theme.features or [] %}
 
+    <!-- Normalize features: extract names and configs from dict items -->
+    {% set featureConfig = {} %}
+    {% set features = [] %}
+    {% for item in config.theme.features or [] %}
+      {% if item is string %}
+        {% set _ = features.append(item) %}
+      {% else %}
+        {% for name, opts in item.items() %}
+          {% set _ = features.append(name) %}
+          {% if opts %}
+            {% set _ = featureConfig.update({name: opts}) %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
     <!--
       State toggles - we need to set autocomplete="off" in order to reset the
       drawer on back button invocation in some browsers
@@ -438,6 +454,7 @@
           },
           "search": "assets/javascripts/workers/search.js" | url,
           "annotate": _.annotate or none,
+          "featureConfig": featureConfig or none,
           "tags": _.tags or none,
           "version": _.version or none
         } | tojson -}}
