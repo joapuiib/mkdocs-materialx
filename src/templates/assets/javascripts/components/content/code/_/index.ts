@@ -66,8 +66,10 @@ import {
   mountInlineTooltip2
 } from "~/components/tooltip2"
 import {
+  renderBlobDownloadButton,
   renderClipboardButton,
   renderCodeBlockNavigation,
+  renderDownloadButton,
   renderSelectionButton
 } from "~/templates"
 
@@ -464,6 +466,55 @@ export function mountCodeBlock(
             oldURL: window.location.href
           }))
         })
+      }
+    }
+
+    /* Render download button if data-download attribute is present */
+    const downloadAttr =
+      container?.dataset.download ||
+      parent.dataset.download ||
+      el.dataset.download
+
+    if (downloadAttr) {
+      const filenameAttr =
+        container?.dataset.downloadFilename ||
+        parent.dataset.downloadFilename ||
+        container?.querySelector<HTMLElement>(".filename")?.textContent?.trim() ||
+        undefined
+
+      if (downloadAttr === "1" || downloadAttr === "true") {
+
+        /* Blob download - derive filename from title or data attribute */
+        const filename = filenameAttr ?? "download.txt"
+        const button = renderBlobDownloadButton()
+        buttons.push(button)
+        if (feature("content.tooltips"))
+          content$.push(mountInlineTooltip2(button, { viewport$ }))
+
+        /* On click: read code block text, create blob and trigger download */
+        fromEvent(button, "click")
+          .pipe(takeUntil(done$))
+          .subscribe(() => {
+            const code = el.textContent ?? ""
+            const blob = new Blob([code], { type: "text/plain" })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = filename
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+          })
+
+      } else {
+
+        /* URL download - link to external URL with suggested filename */
+        const filename = filenameAttr ?? downloadAttr.split("/").pop() ?? "download.txt"
+        const button = renderDownloadButton(downloadAttr, filename)
+        buttons.push(button)
+        if (feature("content.tooltips"))
+          content$.push(mountInlineTooltip2(button, { viewport$ }))
       }
     }
 

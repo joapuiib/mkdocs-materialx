@@ -123,6 +123,71 @@ theme:
 
   [line highlighting]: #highlighting-specific-lines
 
+### Code download button
+
+<!-- md:version 10.1.4 -->
+<!-- md:flag experimental -->
+
+Code blocks can include a button to download the content. There are two modes:
+**blob download**, which saves the code block's content as a local file, and
+**URL download**, which links to an external URL. The button is enabled
+per code block using the `data-download` attribute via the [Attribute Lists]
+extension:
+
+=== "Blob download"
+
+    ```` markdown title="Code block with blob download button"
+    ``` { .py title="bubble_sort.py" data-download="1" }
+    def bubble_sort(items):
+        for i in range(len(items)):
+            for j in range(len(items) - 1 - i):
+                if items[j] > items[j + 1]:
+                    items[j], items[j + 1] = items[j + 1], items[j]
+    ```
+    ````
+
+    Setting `data-download="1"` (or `"true"`) renders a download button that
+    saves the code block's text content as a file directly in the browser.
+
+=== "URL download"
+
+    ```` markdown title="Code block with URL download button"
+    ``` { .py title="buble_sort.py" data-download="https://example.com/bubble_sort.py" }
+    def bubble_sort(items):
+        for i in range(len(items)):
+            for j in range(len(items) - 1 - i):
+                if items[j] > items[j + 1]:
+                    items[j], items[j + 1] = items[j + 1], items[j]
+    ```
+    ````
+
+    Setting `data-download` to a URL renders a link button pointing to that
+    URL with the HTML `download` attribute, prompting the browser to save
+    rather than navigate.
+
+``` { .py title="bubble_sort.py" data-download="1" }
+def bubble_sort(items):
+    for i in range(len(items)):
+        for j in range(len(items) - 1 - i):
+            if items[j] > items[j + 1]:
+                items[j], items[j + 1] = items[j + 1], items[j]
+```
+
+The filename suggested to the browser is resolved in the following order of priority:
+
+=== "Blob download"
+
+    1. `data-download-filename` attribute on the code block
+    2. `title` option on the code block
+    3. Fallback: `download.txt`
+
+=== "URL download"
+
+    1. `data-download-filename` attribute on the code block
+    2. `title` option on the code block
+    3. Last path segment of the URL
+    4. Fallback: `download.txt`
+
 ### Code annotations
 
 <!-- md:version 8.0.0 -->

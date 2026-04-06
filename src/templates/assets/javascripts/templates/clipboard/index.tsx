@@ -49,8 +49,43 @@ export function renderSelectionButton(): HTMLElement {
   return (
     <button
       class="md-code__button"
-      title="Toggle line selection"
+      title={translation("code.select")}
       data-md-type="select"
+    ></button>
+  )
+}
+
+/**
+ * Render a download button that links to an external URL
+ *
+ * @param url - Download URL
+ * @param filename - Suggested filename for the download
+ *
+ * @returns Element
+ */
+export function renderDownloadButton(url: string, filename: string): HTMLElement {
+  return (
+    <a
+      class="md-code__button"
+      title={translation("code.download")}
+      href={url}
+      download={filename}
+      data-md-type="download"
+    ></a>
+  )
+}
+
+/**
+ * Render a download button that saves code block content as a blob
+ *
+ * @returns Element
+ */
+export function renderBlobDownloadButton(): HTMLElement {
+  return (
+    <button
+      class="md-code__button"
+      title={translation("code.download")}
+      data-md-type="download"
     ></button>
   )
 }
