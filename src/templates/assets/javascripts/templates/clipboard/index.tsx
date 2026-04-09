@@ -56,20 +56,17 @@ export function renderSelectionButton(): HTMLElement {
 }
 
 /**
- * Render a download button that links to an external URL
- *
- * @param url - Download URL
- * @param filename - Suggested filename for the download
+ * Render a download button that fetches a URL and saves it as a file
  *
  * @returns Element
  */
 export function renderDownloadButton(url: string, filename: string): HTMLElement {
   return (
     <a
-      class="md-code__button"
-      title={translation("code.download")}
       href={url}
       download={filename}
+      class="md-code__button"
+      title={translation("code.download")}
       data-md-type="download"
     ></a>
   )

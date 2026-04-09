@@ -125,19 +125,18 @@ theme:
 
 ### Code download button
 
-<!-- md:version 10.1.4 -->
 <!-- md:flag experimental -->
 
 Code blocks can include a button to download the content. There are two modes:
 **blob download**, which saves the code block's content as a local file, and
-**URL download**, which links to an external URL. The button is enabled
-per code block using the `data-download` attribute via the [Attribute Lists]
-extension:
+**URL download**, which links to a URL (absolute or relative to the site). The
+button is enabled per code block using the `data-download` attribute via the
+[Attribute Lists] extension:
 
 === "Blob download"
 
     ```` markdown title="Code block with blob download button"
-    ``` { .py title="bubble_sort.py" data-download="1" }
+    ``` { .py title="bubble_sort.py" data-download="blob" }
     def bubble_sort(items):
         for i in range(len(items)):
             for j in range(len(items) - 1 - i):
@@ -146,13 +145,13 @@ extension:
     ```
     ````
 
-    Setting `data-download="1"` (or `"true"`) renders a download button that
-    saves the code block's text content as a file directly in the browser.
+    Setting `data-download="blob"` renders a button that saves the code
+    block's text content as a file directly in the browser.
 
 === "URL download"
 
     ```` markdown title="Code block with URL download button"
-    ``` { .py title="buble_sort.py" data-download="https://example.com/bubble_sort.py" }
+    ``` { .py data-download="https://example.com/bubble_sort.py" }
     def bubble_sort(items):
         for i in range(len(items)):
             for j in range(len(items) - 1 - i):
@@ -162,10 +161,16 @@ extension:
     ````
 
     Setting `data-download` to a URL renders a link button pointing to that
-    URL with the HTML `download` attribute, prompting the browser to save
-    rather than navigate.
+    URL with the HTML `download` attribute. Both absolute and relative URLs
+    are accepted.
 
-``` { .py title="bubble_sort.py" data-download="1" }
+    !!! warning "Cross-origin URLs"
+
+        Browsers only honour the `download` attribute for **same-origin** URLs.
+        Cross-origin URLs will open in a new tab instead of triggering a save
+        dialog — this is an intentional browser security restriction.
+
+``` { .py title="bubble_sort.py" data-download="blob" }
 def bubble_sort(items):
     for i in range(len(items)):
         for j in range(len(items) - 1 - i):
@@ -173,20 +178,27 @@ def bubble_sort(items):
                 items[j], items[j + 1] = items[j + 1], items[j]
 ```
 
-The filename suggested to the browser is resolved in the following order of priority:
+
+#### Suggested filename
+
+The filename suggested to the browser is resolved in the following order of
+priority. The `title` option is normalized to a safe filename: the last path
+segment is taken, lowercased, and any characters other than letters, digits,
+dots, hyphens, and underscores are replaced by hyphens.
 
 === "Blob download"
 
-    1. `data-download-filename` attribute on the code block
-    2. `title` option on the code block
-    3. Fallback: `download.txt`
+    1. `data-filename` attribute on the code block
+    2. `title` option on the code block (normalized)
+    3. Fallback: `download.<lang>` (e.g. `download.python`), or `download.txt` if no language
 
 === "URL download"
 
-    1. `data-download-filename` attribute on the code block
-    2. `title` option on the code block
+    1. `data-filename` attribute on the code block
+    2. `title` option on the code block (normalized)
     3. Last path segment of the URL
-    4. Fallback: `download.txt`
+    4. Fallback: `download.<lang>` (e.g. `download.python`), or `download.txt` if no language
+
 
 ### Code annotations
 

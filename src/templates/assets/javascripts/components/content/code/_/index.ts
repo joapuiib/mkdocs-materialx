@@ -477,15 +477,32 @@ export function mountCodeBlock(
 
     if (downloadAttr) {
       const filenameAttr =
-        container?.dataset.downloadFilename ||
-        parent.dataset.downloadFilename ||
-        container?.querySelector<HTMLElement>(".filename")?.textContent?.trim() ||
+        container?.dataset.filename ||
+        parent.dataset.filename ||
         undefined
 
-      if (downloadAttr === "1" || downloadAttr === "true") {
+      /* Normalize title to a safe filename: last path segment, lowercased,
+         special characters replaced by hyphens */
+      const titleText =
+        container?.querySelector<HTMLElement>(".filename")?.textContent?.trim()
+      const titleFilename = titleText
+        ? titleText.split("/").pop()!
+            .toLowerCase()
+            .replace(/[^a-z0-9._-]+/g, "-")
+            .replace(/^-+|-+$/g, "") || undefined
+        : undefined
 
-        /* Blob download - derive filename from title or data attribute */
-        const filename = filenameAttr ?? "download.txt"
+      /* Derive fallback filename from code block language class */
+      const langClass = Array.from(container?.classList ?? [])
+        .find(c => c.startsWith("language-"))
+      const fallback = langClass
+        ? `download.${langClass.slice("language-".length)}`
+        : "download.txt"
+
+      if (downloadAttr === "blob") {
+
+        /* Blob download - derive filename from attribute, title, or fallback */
+        const filename = filenameAttr ?? titleFilename ?? fallback
         const button = renderBlobDownloadButton()
         buttons.push(button)
         if (feature("content.tooltips"))
@@ -509,8 +526,9 @@ export function mountCodeBlock(
 
       } else {
 
-        /* URL download - link to external URL with suggested filename */
-        const filename = filenameAttr ?? downloadAttr.split("/").pop() ?? "download.txt"
+        /* URL download - absolute or relative URL within the same site */
+        const urlSegment = downloadAttr.split("/").pop() ?? undefined
+        const filename = filenameAttr ?? titleFilename ?? urlSegment ?? fallback
         const button = renderDownloadButton(downloadAttr, filename)
         buttons.push(button)
         if (feature("content.tooltips"))
