@@ -28,6 +28,7 @@ on:
       - 'docs/**'
       - 'includes/**'
       - 'material/overrides/**'
+      - 'material/extensions/**'
       - 'src/templates/partials/languages/**'
       - 'mkdocs.yml'
 
@@ -51,6 +52,7 @@ jobs:
             docs
             includes
             material/overrides
+            material/extensions
             src/templates/partials/languages
             mkdocs.yml
 
