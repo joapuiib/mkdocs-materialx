@@ -24,8 +24,56 @@ import { translation } from "~/_"
 import { h } from "~/utilities"
 
 /* ----------------------------------------------------------------------------
+ * Helper types
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Custom code button
+ */
+interface CustomCodeButton {
+  id: string                            /* Button identifier */
+  title: string                         /* Accessible label */
+  content?: string                      /* Visible button content */
+  class?: string                        /* Additional class names */
+}
+
+/* ----------------------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------------------- */
+
+/**
+ * Render code block button
+ *
+ * @param type - Button type
+ * @param title - Button title
+ * @param options - Button options
+ *
+ * @returns Element
+ */
+function renderCodeButton(
+  type: string,
+  title: string,
+  options: {
+    className?: string
+    content?: string
+    clipboardTarget?: string
+  } = {}
+): HTMLElement {
+  return (
+    <button
+      class={["md-code__button", options.className].filter(Boolean).join(" ")}
+      title={title}
+      aria-label={title}
+      data-md-type={type}
+      data-md-code-button={type}
+      data-clipboard-target={options.clipboardTarget}
+    >
+      {options.content
+        ? <span class="md-code__button-label">{options.content}</span>
+        : null}
+    </button>
+  )
+}
 
 /**
  * Render a 'copy-to-clipboard' button
@@ -35,24 +83,22 @@ import { h } from "~/utilities"
  * @returns Element
  */
 export function renderClipboardButton(id: string): HTMLElement {
-  return (
-    <button
-      class="md-code__button"
-      title={translation("clipboard.copy")}
-      data-clipboard-target={`#${id} > code`}
-      data-md-type="copy"
-    ></button>
-  )
+  return renderCodeButton("copy", translation("clipboard.copy"), {
+    clipboardTarget: `#${id} > code`
+  })
 }
 
 export function renderSelectionButton(): HTMLElement {
-  return (
-    <button
-      class="md-code__button"
-      title="Toggle line selection"
-      data-md-type="select"
-    ></button>
-  )
+  return renderCodeButton("select", "Toggle line selection")
+}
+
+export function renderCustomCodeButton(
+  { id, title, content, class: className }: CustomCodeButton
+): HTMLElement {
+  return renderCodeButton(id, title, {
+    className,
+    content
+  })
 }
 
 export function renderCodeBlockNavigation() {

@@ -72,6 +72,7 @@ import {
   mountSource,
   mountTableOfContents,
   mountTabs,
+  setupCodeBlockButtons,
   watchHeader,
   watchMain
 } from "./components"
@@ -142,6 +143,9 @@ const config = configuration()
 const index$ = document.forms.namedItem("search")
   ? fetchSearchIndex()
   : NEVER
+
+// Set up code button extensions
+setupCodeBlockButtons()
 
 // Set up Clipboard.js integration
 const alert$ = new Subject<string>()

@@ -82,6 +82,54 @@ export type Translations =
 /* ------------------------------------------------------------------------- */
 
 /**
+ * Code button context
+ */
+export interface CodeButtonContext {
+  container: HTMLElement                /* Code block container */
+  code: HTMLElement                     /* Code element */
+  language?: string                     /* Code block language */
+  source: string                        /* Code block content */
+  selection: boolean                    /* Code block supports selection */
+}
+
+/**
+ * Code button callback arguments
+ */
+export interface CodeButtonActionArgs extends CodeButtonContext {
+  button: HTMLElement                   /* Trigger element */
+  event: MouseEvent                     /* Trigger event */
+}
+
+/**
+ * Code button callback
+ */
+export type CodeButtonAction =
+  (args: CodeButtonActionArgs) => void
+
+/**
+ * Custom code button
+ */
+export interface CustomCodeButton {
+  id: string                            /* Button identifier */
+  title: string                         /* Accessible label */
+  content?: string                      /* Visible button content */
+  class?: string                        /* Additional class names */
+  enabled?: (context: CodeButtonContext) => boolean
+  onClick: CodeButtonAction             /* Click handler */
+}
+
+/**
+ * Code button plugin
+ */
+export interface CodeButtonPlugin {
+  copy?: (context: CodeButtonContext) => boolean
+  select?: (context: CodeButtonContext) => boolean
+  buttons?: (context: CodeButtonContext) => CustomCodeButton[]
+}
+
+/* ------------------------------------------------------------------------- */
+
+/**
  * Versioning
  */
 export interface Versioning {

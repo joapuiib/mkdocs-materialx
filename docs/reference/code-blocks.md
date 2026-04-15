@@ -123,6 +123,63 @@ theme:
 
   [line highlighting]: #highlighting-specific-lines
 
+### Code button overrides
+
+If you want to alter code block button behavior without changing theme
+configuration, you can do it entirely from `extra_javascript`. The theme exposes
+`window.registerCodeBlockButtons()` before the first `DOMContentLoaded`-driven
+content mount, so extra scripts can override the built-in `copy` and `select`
+buttons or append custom ones.
+
+=== ":octicons-file-code-16: `docs/javascripts/code-buttons.js`"
+
+    ``` javascript
+    window.registerCodeBlockButtons?.({
+      copy({ language }) {
+        return language !== "shell-console"
+      },
+      select({ language }) {
+        return language !== "shell-console"
+      },
+      buttons({ language }) {
+        if (!["yaml", "json"].includes(language || ""))
+          return []
+
+        return [{
+          id: "download",
+          title: "Download code block",
+          content: "Download",
+          onClick({ language, source }) {
+            const blob = new Blob([source], {
+              type: "text/plain;charset=utf-8"
+            })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+
+            link.href = url
+            link.download = `snippet.${language || "txt"}`
+            link.click()
+            URL.revokeObjectURL(url)
+          }
+        }]
+      }
+    })
+    ```
+
+=== ":octicons-file-code-16: `mkdocs.yml`"
+
+    ``` yaml
+    extra_javascript:
+      - javascripts/code-buttons.js
+    ```
+
+Each plugin receives the code block `language`, source text, `code` element and
+toolbar container. Returning `false` from `copy()` or `select()` suppresses the
+corresponding built-in button. Custom buttons are rendered with the stable
+`data-md-code-button` attribute, so they can be styled from an additional style
+sheet. For example, the custom button above renders as
+`[data-md-code-button="download"]`.
+
 ### Code annotations
 
 <!-- md:version 8.0.0 -->

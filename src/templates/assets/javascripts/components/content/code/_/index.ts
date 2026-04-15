@@ -77,6 +77,13 @@ import {
   mountAnnotationList
 } from "../../annotation"
 
+import {
+  getCodeBlockLanguage,
+  getCodeButtonContext,
+  isBuiltInCodeButtonEnabled,
+  renderCustomCodeButtons
+} from "./buttons"
+
 /* ----------------------------------------------------------------------------
  * Types
  * ------------------------------------------------------------------------- */
@@ -225,6 +232,9 @@ export function mountCodeBlock(
     // Code block sequence number
     const buttons: HTMLElement[] = []
     const parent = el.closest("pre")!
+    const language = getCodeBlockLanguage(el)
+    const spans = getElements(":scope > span[id]", el)
+    const context = getCodeButtonContext(el, parent, spans.length > 0)
 
     // Check if there's a parent element with an id, and use that id, otherwise
     // generate a new one. This is necessary to allow for authors to define
@@ -232,6 +242,10 @@ export function mountCodeBlock(
     const unique = parent.closest("[id]")
     const id = unique ? unique.id : sequence++
     parent.id = `__code_${id}`
+    if (language) {
+      parent.setAttribute("data-md-code-language", language)
+      el.setAttribute("data-md-code-language", language)
+    }
 
     /* Handle code annotations and highlights */
     const content$: Array<Observable<Component<CodeBlock>>> = []
@@ -260,14 +274,17 @@ export function mountCodeBlock(
     // @todo: refactor and move into separate component
 
     /* Check if code block has line spans */
-    const spans = getElements(":scope > span[id]", el)
     if (spans.length) {
       el.classList.add("md-code__content")
 
       /* Mount code selection */
-      if (el.closest(".select") || (
-        feature("content.code.select") && !el.closest(".no-select")
-      )) {
+      if (
+        (el.closest(".select") || (
+          feature("content.code.select") &&
+          !el.closest(".no-select")
+        )) &&
+        isBuiltInCodeButtonEnabled("select", context)
+      ) {
         const base = +spans[0].id.split("-").pop()!
 
         /* Mount tooltip, if enabled */
@@ -469,16 +486,25 @@ export function mountCodeBlock(
 
     /* Render button for Clipboard.js integration */
     if (ClipboardJS.isSupported()) {
-      if (el.closest(".copy") || (
-        feature("content.code.copy") && !el.closest(".no-copy")
-      )) {
-
+      if (
+        (el.closest(".copy") || (
+          feature("content.code.copy") &&
+          !el.closest(".no-copy")
+        )) &&
+        isBuiltInCodeButtonEnabled("copy", context)
+      ) {
         /* Mount tooltip, if enabled */
         const button = renderClipboardButton(parent.id)
         buttons.push(button)
         if (feature("content.tooltips"))
           content$.push(mountInlineTooltip2(button, { viewport$ }))
       }
+    }
+
+    for (const button of renderCustomCodeButtons(context)) {
+      buttons.push(button)
+      if (feature("content.tooltips"))
+        content$.push(mountInlineTooltip2(button, { viewport$ }))
     }
 
     // @hack Render code navigation and buttons

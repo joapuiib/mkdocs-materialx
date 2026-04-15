@@ -20,6 +20,25 @@
  * IN THE SOFTWARE.
  */
 
-export * from "./h"
-export * from "./code"
-export * from "./round"
+/* ----------------------------------------------------------------------------
+ * Functions
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Extract code block text
+ *
+ * @param el - Code block element
+ *
+ * @returns Extracted text
+ */
+export function extractCodeBlockText(
+  el: HTMLElement
+): string {
+  el.setAttribute("data-md-copying", "")
+  const copy = el.closest<HTMLElement>("[data-copy]")
+  const text = copy
+    ? copy.getAttribute("data-copy")!
+    : el.innerText
+  el.removeAttribute("data-md-copying")
+  return text.trimEnd()
+}

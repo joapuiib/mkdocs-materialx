@@ -64,9 +64,12 @@
 
   // Code block button
   &__button {
-    display: block;
-    width: px2em(24px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: px2em(24px);
     height: px2em(24px);
+    padding: 0 px2em(6px);
     color: var(--md-default-fg-color--lightest);
     cursor: pointer;
     outline-color: var(--md-accent-fg-color);
@@ -91,7 +94,14 @@
 
     // Button icon - the width and height are defined in `em`, so the size is
     // automatically adjusted for nested code blocks (e.g. in admonitions)
-    &::after {
+    &[data-md-type="copy"],
+    &[data-md-type="select"] {
+      width: px2em(24px);
+      padding: 0;
+    }
+
+    &[data-md-type="copy"]::after,
+    &[data-md-type="select"]::after {
       display: block;
       width: px2em(18px);
       height: px2em(18px);
@@ -101,6 +111,13 @@
       mask-repeat: no-repeat;
       mask-position: center;
       mask-size: contain;
+    }
+
+    &-label {
+      font-size: px2em(11px);
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     // Code block button icon for selection

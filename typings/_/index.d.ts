@@ -22,6 +22,7 @@
 
 import { Observable, Subject } from "rxjs"
 
+import { CodeButtonPlugin } from "~/_"
 import { Keyboard, Viewport } from "~/browser"
 import { Component } from "~/components"
 
@@ -101,4 +102,6 @@ declare global {
   var alert$: Subject<string>          /* Alert subject */
   var progress$: Subject<number>       /* Progress indicator subject */
   var component$: Observable<Component>/* Component observable */
+  var registerCodeBlockButtons:
+    ((plugin: CodeButtonPlugin) => void) | undefined
 }

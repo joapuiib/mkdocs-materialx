@@ -30,6 +30,7 @@ import {
 
 import { translation } from "~/_"
 import { getElement } from "~/browser"
+import { extractCodeBlockText } from "~/utilities"
 
 /* ----------------------------------------------------------------------------
  * Helper types
@@ -40,27 +41,6 @@ import { getElement } from "~/browser"
  */
 interface SetupOptions {
   alert$: Subject<string>              /* Alert subject */
-}
-
-/* ----------------------------------------------------------------------------
- * Helper functions
- * ------------------------------------------------------------------------- */
-
-/**
- * Extract text to copy
- *
- * @param el - HTML element
- *
- * @returns Extracted text
- */
-function extract(el: HTMLElement): string {
-  el.setAttribute("data-md-copying", "")
-  const copy = el.closest("[data-copy]")
-  const text = copy
-    ? copy.getAttribute("data-copy")!
-    : el.innerText
-  el.removeAttribute("data-md-copying")
-  return text.trimEnd()
 }
 
 /* ----------------------------------------------------------------------------
@@ -80,7 +60,7 @@ export function setupClipboardJS(
       new ClipboardJS("[data-clipboard-target], [data-clipboard-text]", {
         text: el => (
           el.getAttribute("data-clipboard-text")! ||
-          extract(getElement(
+          extractCodeBlockText(getElement(
             el.getAttribute("data-clipboard-target")!
           ))
         )
