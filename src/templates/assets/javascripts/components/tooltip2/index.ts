@@ -43,6 +43,7 @@ import {
   share,
   startWith,
   switchMap,
+  takeUntil,
   tap,
   throttleTime,
   timer,
@@ -221,7 +222,11 @@ export function mountTooltip2(
     combineLatest([
       push$.pipe(map(({ active }) => active)),
       node$.pipe(
-        switchMap(node => watchElementHover(node, 250)),
+        // Stop tracking the tooltip when the component is unmounted, as the
+        // hover observable never completes on its own and would leak listeners
+        switchMap(node => watchElementHover(node, 250).pipe(
+          takeUntil(push$.pipe(ignoreElements(), endWith(true)))
+        )),
         startWith(false)
       )
     ])
@@ -350,26 +355,97 @@ export function mountTooltip2(
  * @param el - Tooltip host element
  * @param dependencies - Dependencies
  * @param container - Container
+ * @param content - Tooltip content, defaults to the `title` of the host
  *
  * @returns Tooltip component observable
  */
 export function mountInlineTooltip2(
   el: HTMLElement, { viewport$ }: { viewport$: Observable<Viewport> },
-  container = document.body
+  container = document.body, content?: string | HTMLElement
 ): Observable<Component<Tooltip>> {
   return mountTooltip2(el, {
     content$: new Observable<HTMLElement>(observer => {
-      const title = el.title
-      const node = renderInlineTooltip2(title)
+      const title = el.getAttribute("title") ?? undefined
+      const node = renderInlineTooltip2(content ?? title ?? "")
       observer.next(node)
       el.removeAttribute("title")
       // Append tooltip and remove on unsubscription
       container.append(node)
       return () => {
         node.remove()
-        el.setAttribute("title", title)
+        if (typeof title !== "undefined")
+          el.setAttribute("title", title)
       }
     }),
     viewport$
   }, 0)
+}
+
+/* ----------------------------------------------------------------------------
+ * Public API
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Tooltips attached through the public API, with their unmount functions
+ */
+const attached = new Map<HTMLElement, () => void>()
+
+/**
+ * Observer removing tooltips of host elements that left the document
+ */
+let observer: MutationObserver | undefined
+
+/**
+ * Detach all tooltips whose host element is no longer part of the document
+ */
+function sweep(): void {
+  for (const [el, unmount] of attached)
+    if (!el.isConnected)
+      unmount()
+}
+
+/**
+ * Attach a tooltip to an element at any time
+ *
+ * The tooltip is identical to the ones created for `[title]` elements. If
+ * `content` is omitted, the `title` attribute of the element is used. The
+ * returned function detaches the tooltip and restores the `title`. Tooltips
+ * are also detached automatically when the host element is removed from the
+ * document, which includes page replacement during instant navigation.
+ *
+ * @param el - Tooltip host element
+ * @param viewport$ - Viewport observable
+ * @param content - Tooltip content
+ *
+ * @returns Function to detach the tooltip
+ */
+export function attachTooltip2(
+  el: HTMLElement, viewport$: Observable<Viewport>,
+  content?: string | HTMLElement
+): () => void {
+  const previous = attached.get(el)
+  if (previous)
+    previous()
+
+  // Subscribe to tooltip and keep track of it
+  const subscription = mountInlineTooltip2(
+    el, { viewport$ }, document.body, content
+  ).subscribe()
+  const unmount = () => {
+    subscription.unsubscribe()
+    if (attached.get(el) === unmount)
+      attached.delete(el)
+    if (!attached.size) {
+      observer?.disconnect()
+      observer = undefined
+    }
+  }
+  attached.set(el, unmount)
+
+  // Observe the document only while tooltips are attached
+  if (!observer) {
+    observer = new MutationObserver(sweep)
+    observer.observe(document.body, { childList: true, subtree: true })
+  }
+  return unmount
 }

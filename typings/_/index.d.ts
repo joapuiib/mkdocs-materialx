@@ -101,4 +101,7 @@ declare global {
   var alert$: Subject<string>          /* Alert subject */
   var progress$: Subject<number>       /* Progress indicator subject */
   var component$: Observable<Component>/* Component observable */
+  var tooltip: (                       /* Tooltip API */
+    el: HTMLElement, content?: string | HTMLElement
+  ) => () => void
 }

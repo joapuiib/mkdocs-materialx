@@ -79,6 +79,31 @@ extra_javascript:
   [instant loading]: setup/setting-up-navigation.md/#instant-loading
   [RxJS Observable]: https://rxjs.dev/api/index/class/Observable
 
+### Tooltips for dynamic elements
+
+Tooltips are mounted when a page is loaded. Elements created later by your own
+JavaScript (e.g. after a `fetch`) can get the same tooltip with
+`window.tooltip(element, content?)`, which requires the
+[`content.tooltips`][content.tooltips] feature. `content` is a string or an
+`HTMLElement`; if omitted, the `title` attribute of the element is used. The
+function returns another function that detaches the tooltip and restores the
+`title`:
+
+``` javascript
+const button = document.createElement("button")
+button.textContent = "Check"
+document.querySelector("#quiz").append(button)
+
+const detach = tooltip(button, "Check your answer")
+// later: detach()
+```
+
+Tooltips are also detached automatically when the host element is removed from
+the document, e.g. when [instant loading] replaces the page. If
+`content.tooltips` is disabled, `tooltip()` does nothing.
+
+  [content.tooltips]: reference/tooltips.md#improved-tooltips
+
 ## Extending the theme
 
 If you want to alter the HTML source (e.g. add or remove some parts), you can

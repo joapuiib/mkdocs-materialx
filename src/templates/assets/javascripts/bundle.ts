@@ -71,6 +71,7 @@ import {
   watchHeader,
   watchMain
 } from "./components"
+import { attachTooltip2 } from "./components/tooltip2"
 import {
   createSearchController,
   fetchSitemap,
@@ -304,3 +305,6 @@ window.print$     = print$             // Media print observable
 window.alert$     = alert$             // Alert subject
 window.progress$  = progress$          // Progress indicator subject
 window.component$ = component$         // Component observable
+window.tooltip    = (el, content) => feature("content.tooltips")
+  ? attachTooltip2(el, viewport$, content)
+  : () => {}                            // Tooltip API
